@@ -1,68 +1,68 @@
 package handler
 
 import (
-	"encoding/json"
-	"html/template"
-	"net/http"
+  "encoding/json"
+  "html/template"
+  "net/http"
 
-	"github.com/graphql-go/graphql"
+  "github.com/estrados/graphql"
 )
 
 // graphiqlData is the page data structure of the rendered GraphiQL page
 type graphiqlData struct {
-	GraphiqlVersion string
-	QueryString     string
-	VariablesString string
-	OperationName   string
-	ResultString    string
+  GraphiqlVersion string
+  QueryString     string
+  VariablesString string
+  OperationName   string
+  ResultString    string
 }
 
 // renderGraphiQL renders the GraphiQL GUI
 func renderGraphiQL(w http.ResponseWriter, params graphql.Params) {
-	t := template.New("GraphiQL")
-	t, err := t.Parse(graphiqlTemplate)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+  t := template.New("GraphiQL")
+  t, err := t.Parse(graphiqlTemplate)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
 
-	// Create variables string
-	vars, err := json.MarshalIndent(params.VariableValues, "", "  ")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	varsString := string(vars)
-	if varsString == "null" {
-		varsString = ""
-	}
+  // Create variables string
+  vars, err := json.MarshalIndent(params.VariableValues, "", "  ")
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+  varsString := string(vars)
+  if varsString == "null" {
+    varsString = ""
+  }
 
-	// Create result string
-	var resString string
-	if params.RequestString == "" {
-		resString = ""
-	} else {
-		result, err := json.MarshalIndent(graphql.Do(params), "", "  ")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		resString = string(result)
-	}
+  // Create result string
+  var resString string
+  if params.RequestString == "" {
+    resString = ""
+  } else {
+    result, err := json.MarshalIndent(graphql.Do(params), "", "  ")
+    if err != nil {
+      http.Error(w, err.Error(), http.StatusInternalServerError)
+      return
+    }
+    resString = string(result)
+  }
 
-	d := graphiqlData{
-		GraphiqlVersion: graphiqlVersion,
-		QueryString:     params.RequestString,
-		ResultString:    resString,
-		VariablesString: varsString,
-		OperationName:   params.OperationName,
-	}
-	err = t.ExecuteTemplate(w, "index", d)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+  d := graphiqlData{
+    GraphiqlVersion: graphiqlVersion,
+    QueryString:     params.RequestString,
+    ResultString:    resString,
+    VariablesString: varsString,
+    OperationName:   params.OperationName,
+  }
+  err = t.ExecuteTemplate(w, "index", d)
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
 
-	return
+  return
 }
 
 // graphiqlVersion is the current version of GraphiQL

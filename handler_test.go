@@ -12,10 +12,10 @@ import (
 
 	"context"
 
-	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/graphql-go/graphql/language/location"
-	"github.com/graphql-go/graphql/testutil"
+	"github.com/estrados/graphql"
+	"github.com/estrados/graphql/gqlerrors"
+	"github.com/estrados/graphql/language/location"
+	"github.com/estrados/graphql/testutil"
 	"github.com/graphql-go/handler"
 )
 
@@ -245,7 +245,7 @@ func TestHandler_BasicQuery_WithFormatErrorFn(t *testing.T) {
 	customFormattedError := gqlerrors.FormattedError{
 		Message: resolverError.Error(),
 		Locations: []location.SourceLocation{
-			location.SourceLocation{
+			{
 				Line:   1,
 				Column: 2,
 			},
